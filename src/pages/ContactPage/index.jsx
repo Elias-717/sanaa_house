@@ -76,24 +76,51 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // Honeypot check
+    // Honeypot check — bots fill hidden fields, humans don't
     if (fields.honeypot) return
+
     const errs = validate(fields, copy)
     if (Object.keys(errs).length) {
       setErrors(errs)
-      // Focus first error
       const first = formRef.current?.querySelector('[aria-invalid="true"]')
       first?.focus()
       return
     }
     setErrors({})
     setStatus('submitting')
+
     try {
-      // Simulate submission — replace with real endpoint (Formspree/EmailJS/API)
-      await new Promise(r => setTimeout(r, 900))
-      setStatus('success')
-      setFields(EMPTY)
-    } catch {
+      const endpoint = `https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:    fields.name,
+          email:   fields.email,
+          phone:   fields.phone    || undefined,
+          company: fields.company  || undefined,
+          country: fields.country,
+          inquiry_type: fields.type,
+          message: fields.message,
+          _locale: copy.direction === 'rtl' ? 'ar' : 'en',
+          // Tell Formspree which field to use as reply-to
+          _replyto: fields.email,
+          // Subject line in notification email
+          _subject: `Sana'a House Inquiry — ${fields.type} from ${fields.name}`,
+        }),
+      })
+
+      if (res.ok) {
+        setStatus('success')
+        setFields(EMPTY)
+      } else {
+        // Formspree returns { errors: [...] } on validation failure
+        const data = await res.json().catch(() => ({}))
+        console.error('Formspree error:', data)
+        setStatus('error')
+      }
+    } catch (err) {
+      console.error('Network error:', err)
       setStatus('error')
     }
   }

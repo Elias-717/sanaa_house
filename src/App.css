@@ -579,3 +579,37 @@
   transition: color .2s;
 }
 .nav-story-btn:hover { color: var(--brass); }
+
+/* ── Collection category filter ─────────────────────────────────────────── */
+.collection-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+.collection-filter__btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font: 500 11px/1 'Public Sans', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.collection-filter__btn:hover {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+.collection-filter__btn--active {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: #16110d;
+}
+.collection-empty {
+  color: var(--muted);
+  font: 16px 'Newsreader', serif;
+  padding: 40px 0;
+  text-align: center;
+}

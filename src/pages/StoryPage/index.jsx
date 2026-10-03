@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { chronicle, translations } from './data'
-import logo from './assets/sanaa_logo.png'
+import { chronicle, translations } from '@/data'
+import logo from '@/assets/sanaa_logo.png'
 import './StoryPage.css'
 
 /* ── Shared fade-in observer hook ── */

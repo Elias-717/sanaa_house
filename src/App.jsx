@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
-import { products, translations } from './data'
-import logo from './assets/sanaa_logo.png'
-import { InteractiveHoverButton } from './components/ui/InteractiveHoverButton'
-import StoryPage from './StoryPage'
+import { products, translations } from '@/data'
+import logo from '@/assets/sanaa_logo.png'
+import { InteractiveHoverButton } from '@/components/ui/InteractiveHoverButton'
+import { useTypewriter, useStoryWriter } from '@/hooks/useTypewriter'
+import StoryPage         from '@/pages/StoryPage'
+import ProductPage       from '@/pages/ProductPage'
+import StoresPage        from '@/pages/StoresPage'
+import ContactPage       from '@/pages/ContactPage'
+import CraftsmanshipPage from '@/pages/CraftsmanshipPage'
 import './App.css'
 
 function Anchor({ href, children, className = '', ...rest }) {
   return <a className={className} href={href} {...rest}>{children}</a>
 }
 
-function Header({ copy, locale, onLanguageChange, onStoryOpen }) {
-  const destinations = ['#collection', '#footer', null, '#story', '#footer']
+function Header({ copy, locale, onLanguageChange, onNavigate }) {
   const navRef = useRef(null)
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 })
 
@@ -19,29 +23,46 @@ function Header({ copy, locale, onLanguageChange, onStoryOpen }) {
     if (!nav) return
     const navRect = nav.getBoundingClientRect()
     const itemRect = e.currentTarget.getBoundingClientRect()
-    setIndicator({
-      left: itemRect.left - navRect.left,
-      width: itemRect.width,
-      opacity: 1,
-    })
+    setIndicator({ left: itemRect.left - navRect.left, width: itemRect.width, opacity: 1 })
+  }
+  const handleMouseLeave = () => setIndicator(p => ({ ...p, opacity: 0 }))
+
+  // index → action: 0=collections scroll, 1=stores page, 2=story page,
+  //                  3=craftsmanship page, 4=contact page
+  const handleNavClick = (index, e) => {
+    if (index === 0) return // anchor href handles it
+    e.preventDefault()
+    onNavigate(index)
   }
 
-  const handleMouseLeave = () => {
-    setIndicator(prev => ({ ...prev, opacity: 0 }))
-  }
+  const hrefs = ['#collection', '#', '#', '#', '#']
 
-  return <header className="header">
-    <Anchor className="brand" href="#top"><img src={logo} alt="Sana'a House logo" /><span>Sana'a House<small>دار صنعاء · ١٩٨٧</small></span></Anchor>
-    <nav ref={navRef} onMouseLeave={handleMouseLeave}>
-      <span className="nav-indicator" style={{ left: indicator.left, width: indicator.width, opacity: indicator.opacity }} />
-      {copy.navigation.map((item, index) =>
-        destinations[index] === null
-          ? <button key={item} className="nav-story-btn" onMouseEnter={handleMouseEnter} onClick={onStoryOpen}>{item}</button>
-          : <Anchor href={destinations[index]} key={item} onMouseEnter={handleMouseEnter}>{item}</Anchor>
-      )}
-    </nav>
-    <div className="language"><button type="button" onClick={onLanguageChange}>{copy.language}</button><i>/</i><strong>{locale.toUpperCase()}</strong></div>
-  </header>
+  return (
+    <header className="header">
+      <Anchor className="brand" href="#top">
+        <img src={logo} alt="Sana'a House logo" />
+        <span>Sana'a House<small>دار صنعاء · ١٩٨٧</small></span>
+      </Anchor>
+      <nav ref={navRef} onMouseLeave={handleMouseLeave}>
+        <span className="nav-indicator" style={{ left: indicator.left, width: indicator.width, opacity: indicator.opacity }} />
+        {copy.navigation.map((item, index) => (
+          <Anchor
+            href={hrefs[index]}
+            key={item}
+            onMouseEnter={handleMouseEnter}
+            onClick={(e) => handleNavClick(index, e)}
+          >
+            {item}
+          </Anchor>
+        ))}
+      </nav>
+      <div className="language">
+        <button type="button" onClick={onLanguageChange}>{copy.language}</button>
+        <i>/</i>
+        <strong>{locale.toUpperCase()}</strong>
+      </div>
+    </header>
+  )
 }
 
 function Hero({ copy }) {
@@ -257,87 +278,8 @@ function CoffeeDots() {
   return <canvas ref={canvasRef} className="coffee-dots" />
 }
 
-/* ── Typewriter: character-by-character ── */
-/* ── Typewriter: character-by-character, used for short strings ── */
-function useTypewriter(text, active, { speed = 22, startDelay = 0 } = {}) {
-  const [displayed, setDisplayed] = useState('')
-  const [done, setDone] = useState(false)
 
-  useEffect(() => {
-    if (!active) { setDisplayed(''); setDone(false); return }
-    let i = 0
-    setDisplayed(''); setDone(false)
-    const start = setTimeout(() => {
-      const tick = setInterval(() => {
-        i++
-        setDisplayed(text.slice(0, i))
-        if (i >= text.length) { clearInterval(tick); setDone(true) }
-      }, speed)
-      return () => clearInterval(tick)
-    }, startDelay)
-    return () => clearTimeout(start)
-  }, [active, text, speed, startDelay])
 
-  return { displayed, done }
-}
-
-/* ── Parallel story writer — all four fields type at the same time ── */
-function useStoryWriter(copy, active) {
-  const [eyebrow, setEyebrow] = useState('')
-  const [title,   setTitle]   = useState('')
-  const [body,    setBody]    = useState('')
-  const [link,    setLink]    = useState('')
-  const [doneMap, setDoneMap] = useState({ eyebrow: false, title: false, body: false, link: false })
-
-  useEffect(() => {
-    if (!active) {
-      setEyebrow(''); setTitle(''); setBody(''); setLink('')
-      setDoneMap({ eyebrow: false, title: false, body: false, link: false })
-      return
-    }
-
-    const timers = []
-
-    // eyebrow — char by char, 18 ms
-    let i = 0
-    const eyebrowText = copy.history
-    timers.push(setInterval(() => {
-      i++; setEyebrow(eyebrowText.slice(0, i))
-      if (i >= eyebrowText.length) { clearInterval(timers[0]); setDoneMap(p => ({ ...p, eyebrow: true })) }
-    }, 18))
-
-    // title — char by char, 16 ms
-    let j = 0
-    const titleText = copy.storyTitle
-    timers.push(setInterval(() => {
-      j++; setTitle(titleText.slice(0, j))
-      if (j >= titleText.length) { clearInterval(timers[1]); setDoneMap(p => ({ ...p, title: true })) }
-    }, 16))
-
-    // body — word by word, 22 ms
-    const words = copy.story.split(' ')
-    let k = 0
-    timers.push(setInterval(() => {
-      k++; setBody(words.slice(0, k).join(' '))
-      if (k >= words.length) { clearInterval(timers[2]); setDoneMap(p => ({ ...p, body: true })) }
-    }, 22))
-
-    // link — char by char, 20 ms
-    const linkText = copy.read + ' ↗'
-    let l = 0
-    timers.push(setInterval(() => {
-      l++; setLink(linkText.slice(0, l))
-      if (l >= linkText.length) { clearInterval(timers[3]); setDoneMap(p => ({ ...p, link: true })) }
-    }, 20))
-
-    return () => timers.forEach(clearInterval)
-  }, [active, copy])
-
-  return {
-    eyebrow, title, body, link,
-    cursorOn: (field) => !doneMap[field] && active,
-  }
-}
 
 function PolaroidCaption({ text, active, startDelay = 0 }) {
   const { displayed, done } = useTypewriter(text, active, { speed: 22, startDelay })
@@ -433,64 +375,250 @@ function Story({ copy }) {
   )
 }
 
-function ProductCard({ product, index }) {
-  return <article className={`product product-${index + 1}`}><div className="product-pic"><img src={product.image} alt={product.name} loading="lazy" /><span>0{index + 1}</span></div><p className="eyebrow">{product.category}</p><h3>{product.name}</h3><p>{product.description}</p></article>
+function ProductCard({ product, index, locale, onProductClick }) {
+  const isAr = locale === 'ar'
+  return (
+    <article
+      className={`product product-${index + 1}`}
+      onClick={() => onProductClick(product.slug)}
+      style={{ cursor: 'pointer' }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => e.key === 'Enter' && onProductClick(product.slug)}
+      aria-label={isAr ? product.nameAr : product.name}
+    >
+      <div className="product-pic">
+        <img src={product.image} alt={isAr ? product.nameAr : product.name} loading="lazy" />
+        <span>0{index + 1}</span>
+      </div>
+      <p className="eyebrow">{isAr ? product.categoryAr : product.category}</p>
+      <h3>{isAr ? product.nameAr : product.name}</h3>
+      <p>{isAr ? product.descriptionAr : product.description}</p>
+    </article>
+  )
 }
 
-function Collection({ copy }) {
-  return <section className="collection" id="collection"><div className="section-head"><div><h2>{copy.collectionTitle}</h2><p className="arabic">المقتنيات الحرفية الست المعتمدة</p></div><p>{copy.collectionCopy}</p></div><div className="product-grid">{products.map((product, index) => <ProductCard key={product.name} product={product} index={index} />)}</div></section>
+function Collection({ copy, locale, onProductClick }) {
+  const isAr = locale === 'ar'
+  const categories = ['All', ...new Set(products.map(p => p.category))]
+  const categoriesAr = ['الكل', ...new Set(products.map(p => p.categoryAr))]
+  const [active, setActive] = useState('All')
+
+  const filtered = active === 'All'
+    ? products
+    : products.filter(p => p.category === active)
+
+  // Remap indices so CSS grid classes stay correct for filtered view
+  return (
+    <section className="collection" id="collection">
+      <div className="section-head">
+        <div>
+          <h2>{copy.collectionTitle}</h2>
+          <p className="arabic">المقتنيات الحرفية الست المعتمدة</p>
+        </div>
+        <p>{copy.collectionCopy}</p>
+      </div>
+
+      {/* ── Category filter ── */}
+      <div className="collection-filter" role="group" aria-label={copy.filterLabel}>
+        {categories.map((cat, i) => (
+          <button
+            key={cat}
+            className={`collection-filter__btn ${active === cat ? 'collection-filter__btn--active' : ''}`}
+            onClick={() => setActive(cat)}
+            aria-pressed={active === cat}
+          >
+            {isAr ? categoriesAr[i] : cat}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="collection-empty">{copy.noProducts}</p>
+      ) : (
+        <div className="product-grid">
+          {filtered.map((product, index) => (
+            <ProductCard
+              key={product.slug}
+              product={product}
+              index={index}
+              locale={locale}
+              onProductClick={onProductClick}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  )
 }
 
 function Qamariya({ copy }) {
   return <section className="qamariya"><div className="arch"><img src={logo} alt="Sana'a House logo" /></div><p className="arabic-quote">«{copy.qamariyaTitle}»</p><blockquote>“{copy.qamariyaTitle}”</blockquote><p>{copy.qamariyaCopy}</p><small>— Master Craftsmen, Sana'a House</small></section>
 }
 
-function FavoriteCard({ product, copy }) {
+function FavoriteCard({ product, copy, locale, onProductClick }) {
+  const isAr = locale === 'ar'
   const status = product.category === 'Honey' ? copy.seasonal : copy.inAtelier
-  return <article className="favorite"><div><img src={product.image} alt={product.name} loading="lazy" /></div><p className="eyebrow">{product.category} <em>{status}</em></p><h3>{product.name}</h3><footer><b>{product.price}</b><Anchor href="#collection">{copy.viewArchive}　↗</Anchor></footer></article>
+  return (
+    <article className="favorite" onClick={() => onProductClick(product.slug)} style={{ cursor: 'pointer' }}>
+      <div><img src={product.image} alt={isAr ? product.nameAr : product.name} loading="lazy" /></div>
+      <p className="eyebrow">{isAr ? product.categoryAr : product.category} <em>{status}</em></p>
+      <h3>{isAr ? product.nameAr : product.name}</h3>
+      <footer>
+        <b>{product.price}</b>
+        <span className="underlink" style={{ cursor: 'pointer' }}>{copy.viewArchive}　↗</span>
+      </footer>
+    </article>
+  )
 }
 
-function Favorites({ copy }) {
-  return <section className="favorites"><div className="section-head"><div><h2>{copy.favorites}</h2><p className="eyebrow">{copy.physical}</p></div><span>Fixed Valuation · Currency in YER</span></div><div className="favorite-grid">{products.slice(0, 3).map((product) => <FavoriteCard copy={copy} key={product.name} product={product} />)}</div></section>
+function Favorites({ copy, locale, onProductClick }) {
+  return (
+    <section className="favorites">
+      <div className="section-head">
+        <div><h2>{copy.favorites}</h2><p className="eyebrow">{copy.physical}</p></div>
+        <span>Fixed Valuation · Currency in YER</span>
+      </div>
+      <div className="favorite-grid">
+        {products.slice(0, 3).map(product => (
+          <FavoriteCard copy={copy} key={product.slug} product={product} locale={locale} onProductClick={onProductClick} />
+        ))}
+      </div>
+    </section>
+  )
 }
 
-function Footer({ copy }) {
-  return <footer className="footer" id="footer"><div className="footer-main"><div><h2>Sana'a House</h2><p className="arabic">دار صنعاء للتراث والحِرف</p><p>{copy.footerCopy}</p><small>●　EST. 1987 · SANA'A, YEMEN</small></div><div><label>Physical Ateliers</label><p><b>Old Sana'a Flagship</b><br />Bab Al-Yaman Heritage Quarter<br />Storefront No. 14</p><p><b>Crater Boutique, Aden</b><br />Queen Arwa Historic Arcade</p></div><div><label>Navigation &amp; Inquiries</label>{copy.navigation.map((item) => <Anchor href="#top" key={item}>{item}　↗</Anchor>)}<p className="footer-notice"><b>Atelier Notice</b><br />{copy.notice}</p></div></div><div className="copyright">© 1987–2026 Sana'a House Artisans Co. <span>Sana'a · Aden · Shibam</span></div></footer>
+function Footer({ copy, onNavigate }) {
+  return (
+    <footer className="footer" id="footer">
+      <div className="footer-main">
+        <div>
+          <h2>Sana'a House</h2>
+          <p className="arabic">دار صنعاء للتراث والحِرف</p>
+          <p>{copy.footerCopy}</p>
+          <small>● EST. 1987 · SANA'A, YEMEN</small>
+        </div>
+        <div>
+          <label>Physical Ateliers</label>
+          <p><b>Old Sana'a Flagship</b><br />Bab Al-Yaman Heritage Quarter<br />Storefront No. 14</p>
+          <p><b>Crater Boutique, Aden</b><br />Queen Arwa Historic Arcade</p>
+        </div>
+        <div>
+          <label>Navigation &amp; Inquiries</label>
+          {copy.navigation.map((item, i) => (
+            <button
+              key={item}
+              onClick={() => onNavigate(i)}
+              style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 0', borderBottom: '1px solid var(--line)', color: 'var(--muted)', fontSize: '13px', width: '100%', textAlign: 'inherit' }}
+            >
+              {item}　↗
+            </button>
+          ))}
+          <p className="footer-notice"><b>Atelier Notice</b><br />{copy.notice}</p>
+        </div>
+      </div>
+      <div className="copyright">© 1987–2026 Sana'a House Artisans Co. <span>Sana'a · Aden · Shibam</span></div>
+    </footer>
+  )
 }
 
 function App() {
   const [locale, setLocale] = useState('en')
-  const [page, setPage] = useState('home')
+  // page: 'home' | 'story' | 'product' | 'stores' | 'contact' | 'craftsmanship'
+  const [page,   setPage]   = useState('home')
+  const [productSlug, setProductSlug] = useState(null)
   const copy = translations[locale]
 
-  const handleLanguageChange = () => setLocale(locale === 'en' ? 'ar' : 'en')
+  const handleLanguageChange = () => setLocale(l => l === 'en' ? 'ar' : 'en')
 
+  const goHome = () => { setPage('home'); window.scrollTo({ top: 0 }) }
+
+  // Called by every nav (index = nav item index 0-4, or 'product')
+  const handleNavigate = (indexOrType, slug) => {
+    if (indexOrType === 'product') {
+      setProductSlug(slug); setPage('product'); return
+    }
+    switch (indexOrType) {
+      case 0: setPage('home');           window.scrollTo({ top: 0 }); break
+      case 1: setPage('stores');         break
+      case 2: setPage('story');          break
+      case 3: setPage('craftsmanship');  break
+      case 4: setPage('contact');        break
+      default: break
+    }
+  }
+
+  const openProduct = (slug) => { setProductSlug(slug); setPage('product') }
+
+  /* ── Sub-pages ── */
   if (page === 'story') {
+    return <StoryPage locale={locale} onLanguageChange={handleLanguageChange} onBack={goHome} />
+  }
+  if (page === 'product') {
     return (
-      <StoryPage
+      <ProductPage
+        slug={productSlug}
         locale={locale}
         onLanguageChange={handleLanguageChange}
         onBack={() => setPage('home')}
+        onNavigate={handleNavigate}
+      />
+    )
+  }
+  if (page === 'stores') {
+    return (
+      <StoresPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
+      />
+    )
+  }
+  if (page === 'contact') {
+    return (
+      <ContactPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
+      />
+    )
+  }
+  if (page === 'craftsmanship') {
+    return (
+      <CraftsmanshipPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
       />
     )
   }
 
+  /* ── Home ── */
   return (
     <div className="site" dir={copy.direction}>
-      <Header copy={copy} locale={locale} onLanguageChange={handleLanguageChange} onStoryOpen={() => setPage('story')} />
+      <Header copy={copy} locale={locale} onLanguageChange={handleLanguageChange} onNavigate={handleNavigate} />
       <CoffeeDots />
       <main id="top">
         <Hero copy={copy} />
         <Story copy={copy} />
-        <Collection copy={copy} />
+        <Collection copy={copy} locale={locale} onProductClick={openProduct} />
         <Qamariya copy={copy} />
-        <Favorites copy={copy} />
+        <Favorites copy={copy} locale={locale} onProductClick={openProduct} />
         <section className="teaser">
           <p>{copy.teaser}</p>
-          <Anchor className="underlink" href="#footer">{copy.inquiry}　↗</Anchor>
+          <button
+            className="underlink"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit', padding: 0 }}
+            onClick={() => handleNavigate(4)}
+          >
+            {copy.inquiry}　↗
+          </button>
         </section>
       </main>
-      <Footer copy={copy} />
+      <Footer copy={copy} onNavigate={handleNavigate} />
     </div>
   )
 }

@@ -1,0 +1,26 @@
+export const stores = [
+  {
+    slug: 'bab-al-yaman',
+    name: "Bab al-Yaman Atelier", nameAr: 'أتيليه باب اليمن',
+    address: "Souq al-Milh, Old City, Sana'a", addressAr: 'سوق الملح، المدينة القديمة، صنعاء',
+    city: "Sana'a", cityAr: 'صنعاء',
+    phone: '+967 1 274 881',
+    hours: 'Sat–Thu 08:00–20:00 · Fri 14:00–20:00',
+    hoursAr: 'السبت–الخميس ٠٨:٠٠–٢٠:٠٠ · الجمعة ١٤:٠٠–٢٠:٠٠',
+    coordinates: { lat: 15.3539, lng: 44.2107 },
+    note: 'Main atelier. All six lines available in-store.',
+    noteAr: 'الأتيليه الرئيسي. جميع الخطوط الست متوفرة.',
+  },
+  {
+    slug: 'al-qaa',
+    name: "Al-Qa'a Heritage Corner", nameAr: 'ركن التراث في القاع',
+    address: "Al-Qa'a District, Old City, Sana'a", addressAr: "حي القاع، المدينة القديمة، صنعاء",
+    city: "Sana'a", cityAr: 'صنعاء',
+    phone: '+967 1 311 042',
+    hours: 'Sat–Thu 09:00–19:00 · Fri closed',
+    hoursAr: 'السبت–الخميس ٠٩:٠٠–١٩:٠٠ · الجمعة مغلق',
+    coordinates: { lat: 15.3572, lng: 44.2064 },
+    note: 'Seasonal and rotating selection of guild pieces.',
+    noteAr: 'تشكيلة موسمية ومتناوبة من قطع الحرفيين.',
+  },
+]

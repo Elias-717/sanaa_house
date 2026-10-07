@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { products, stores, getOverallStatus, translations } from '@/data'
+import { products, stores, getOverallStatus, availabilityUpdatedAt, translations } from '@/data'
+import { formatPrice } from '@/utils/formatPrice'
 import logo from '@/assets/sanaa_logo.png'
 import './ProductPage.css'
 
@@ -83,6 +84,9 @@ function AvailabilityPanel({ product, copy, open, onClose, onFindStore }) {
         </ul>
 
         <p className="pp-panel__note">{copy.availabilityNote}</p>
+        <p className="pp-panel__updated">
+          {copy.lastUpdated}: <time dateTime={availabilityUpdatedAt}>{availabilityUpdatedAt}</time>
+        </p>
 
         <button className="pp-panel__find-btn" onClick={onFindStore}>
           {copy.findStore} ↗
@@ -175,7 +179,7 @@ export default function ProductPage({ slug, locale, onLanguageChange, onBack, on
             </div>
 
             <div className="pp-hero__price-row">
-              <span className="pp-price">{product.price}</span>
+              <span className="pp-price">{formatPrice(product.priceNum, locale)}</span>
               <StatusBadge status={overallStatus} copy={copy} />
             </div>
 
@@ -183,7 +187,7 @@ export default function ProductPage({ slug, locale, onLanguageChange, onBack, on
               <button className="pp-btn pp-btn--primary" onClick={() => setPanelOpen(true)}>
                 {copy.checkAvailability}
               </button>
-              <button className="pp-btn pp-btn--ghost" onClick={() => onNavigate(1)}>
+              <button className="pp-btn pp-btn--ghost" onClick={() => onNavigate('stores', product.slug)}>
                 {copy.findStore}
               </button>
             </div>
@@ -242,7 +246,7 @@ export default function ProductPage({ slug, locale, onLanguageChange, onBack, on
         copy={copy}
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        onFindStore={() => { setPanelOpen(false); onNavigate(1) }}
+        onFindStore={() => { setPanelOpen(false); onNavigate('stores', product.slug) }}
       />
     </div>
   )

@@ -65,7 +65,7 @@ function StoreProducts({ store, copy, locale, onProductClick }) {
 }
 
 /* ── Single store card ── */
-function StoreCard({ store, copy, locale, active, onSelect, onProductClick }) {
+function StoreCard({ store, copy, locale, active, carrying, onSelect, onProductClick }) {
   const isAr = locale === 'ar'
   const ref = useRef(null)
 
@@ -85,7 +85,7 @@ function StoreCard({ store, copy, locale, active, onSelect, onProductClick }) {
   return (
     <article
       ref={ref}
-      className={`stp-card stp-fade ${active ? 'stp-card--active' : ''}`}
+      className={`stp-card stp-fade ${active ? 'stp-card--active' : ''} ${carrying ? 'stp-card--carrying' : ''}`}
       onClick={onSelect}
     >
       <div className="stp-card__head">
@@ -94,7 +94,12 @@ function StoreCard({ store, copy, locale, active, onSelect, onProductClick }) {
           <h2 className="stp-card__name">{isAr ? store.nameAr : store.name}</h2>
           <p className="stp-card__address">{isAr ? store.addressAr : store.address}</p>
         </div>
-        <span className={`stp-card__indicator ${active ? 'stp-card__indicator--active' : ''}`} aria-hidden="true" />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+          {carrying && (
+            <span className="stp-carrying-badge">✓ {copy.inStock}</span>
+          )}
+          <span className={`stp-card__indicator ${active ? 'stp-card__indicator--active' : ''}`} aria-hidden="true" />
+        </div>
       </div>
 
       <div className="stp-card__details">
@@ -137,14 +142,34 @@ function StoreCard({ store, copy, locale, active, onSelect, onProductClick }) {
   )
 }
 
-export default function StoresPage({ locale, onLanguageChange, onBack, onNavigate, highlightStore }) {
+export default function StoresPage({ locale, onLanguageChange, onBack, onNavigate, highlightSlug }) {
   const copy = translations[locale]
-  const [activeStore, setActiveStore] = useState(highlightStore || stores[0].slug)
+  const isAr = locale === 'ar'
+
+  // Find the product being highlighted (if any)
+  const highlightProduct = highlightSlug
+    ? products.find(p => p.slug === highlightSlug)
+    : null
+
+  // Pre-select the first store that carries the highlighted product, else first store
+  const firstCarrying = highlightProduct
+    ? stores.find(s => {
+        const status = highlightProduct.availability?.[s.slug]
+        return status === 'in_stock' || status === 'low_stock'
+      })
+    : null
+
+  const [activeStore, setActiveStore] = useState(firstCarrying?.slug || stores[0].slug)
+  const activeStoreData = stores.find(s => s.slug === activeStore) || stores[0]
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
 
-  const activeStoreData = stores.find(s => s.slug === activeStore) || stores[0]
-  const isAr = locale === 'ar'
+  // Helper: is this store carrying the highlighted product?
+  const isCarrying = (storeSlug) => {
+    if (!highlightProduct) return false
+    const status = highlightProduct.availability?.[storeSlug]
+    return status === 'in_stock' || status === 'low_stock'
+  }
 
   return (
     <div className="stp-site" dir={copy.direction}>
@@ -165,6 +190,28 @@ export default function StoresPage({ locale, onLanguageChange, onBack, onNavigat
           </div>
         </header>
 
+        {/* ── Product highlight banner ── */}
+        {highlightProduct && (
+          <div className="stp-highlight-banner">
+            <img src={highlightProduct.image} alt="" aria-hidden="true" />
+            <div>
+              <p className="stp-eyebrow" style={{ margin: 0 }}>
+                {copy.findStore} —
+              </p>
+              <p style={{ margin: 0, fontSize: '14px', color: 'var(--ink)' }}>
+                {isAr ? highlightProduct.nameAr : highlightProduct.name}
+              </p>
+            </div>
+            <button
+              className="stp-highlight-banner__clear"
+              onClick={() => onNavigate('product', highlightSlug)}
+              aria-label="Back to product"
+            >
+              ←
+            </button>
+          </div>
+        )}
+
         {/* ── Split: list + map ── */}
         <div className="stp-body">
           {/* Store list */}
@@ -176,6 +223,7 @@ export default function StoresPage({ locale, onLanguageChange, onBack, onNavigat
                 copy={copy}
                 locale={locale}
                 active={activeStore === store.slug}
+                carrying={isCarrying(store.slug)}
                 onSelect={() => setActiveStore(store.slug)}
                 onProductClick={(slug) => onNavigate('product', slug)}
               />

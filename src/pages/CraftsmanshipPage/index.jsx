@@ -120,7 +120,7 @@ function CraftEntry({ craft, index, locale }) {
 }
 
 /* ── Closing quote ── */
-function ClosingQuote({ ref: _r }) {
+function ClosingQuote({ copy }) {
   const ref = useFadeRef()
   return (
     <section className="crp-closing crp-fade" ref={ref}>
@@ -128,9 +128,9 @@ function ClosingQuote({ ref: _r }) {
         <span /><span /><span />
       </div>
       <blockquote>
-        "The hand does not forget what the machine never learned."
+        {copy.craftingQuote}
       </blockquote>
-      <cite>— Zayd Al-Sanaani, founder, 1987</cite>
+      <cite>{copy.craftingQuoteAuthor}</cite>
     </section>
   )
 }
@@ -209,7 +209,7 @@ export default function CraftsmanshipPage({ locale, onLanguageChange, onBack, on
             {crafts.map((craft, i) => (
               <CraftEntry key={craft.slug} craft={craft} index={i} locale={locale} />
             ))}
-            <ClosingQuote />
+            <ClosingQuote copy={copy} />
           </div>
         </div>
       </main>

@@ -111,3 +111,9 @@ export function getOverallStatus(product) {
   if (vals.includes('low_stock')) return 'Limited'
   return 'Unavailable'
 }
+
+/**
+ * Last time availability data was manually updated by the maintainer.
+ * Update this date whenever store stock is changed in the data file.
+ */
+export const availabilityUpdatedAt = '2026-10-03'

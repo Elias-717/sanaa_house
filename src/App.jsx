@@ -29,7 +29,7 @@ function Header({ copy, locale, onLanguageChange, onNavigate }) {
 
   // index → action: 0=collections scroll, 1=stores page, 2=story page,
   //                  3=craftsmanship page, 4=contact page
-  const handleNavClick = (index, e) => {
+   const handleNavClick = (index, e) => {
     if (index === 0) return // anchor href handles it
     e.preventDefault()
     onNavigate(index)
@@ -499,12 +499,12 @@ function Footer({ copy, onNavigate }) {
           <small>● EST. 1987 · SANA'A, YEMEN</small>
         </div>
         <div>
-          <label>Physical Ateliers</label>
-          <p><b>Old Sana'a Flagship</b><br />Bab Al-Yaman Heritage Quarter<br />Storefront No. 14</p>
-          <p><b>Crater Boutique, Aden</b><br />Queen Arwa Historic Arcade</p>
+          <label>{copy.footerAtelierLabel}</label>
+          <p><b>{copy.footerAtelier1Name}</b><br />{copy.footerAtelier1Addr}</p>
+          <p><b>{copy.footerAtelier2Name}</b><br />{copy.footerAtelier2Addr}</p>
         </div>
         <div>
-          <label>Navigation &amp; Inquiries</label>
+          <label>{copy.footerNavLabel}</label>
           {copy.navigation.map((item, i) => (
             <button
               key={item}
@@ -523,24 +523,36 @@ function Footer({ copy, onNavigate }) {
 }
 
 function App() {
-  const [locale, setLocale] = useState('en')
+  const [locale, setLocale] = useState(() => {
+    const saved = localStorage.getItem('sh_locale')
+    if (saved === 'en' || saved === 'ar') return saved
+    return navigator.language?.startsWith('ar') ? 'ar' : 'en'
+  })
   // page: 'home' | 'story' | 'product' | 'stores' | 'contact' | 'craftsmanship'
-  const [page,   setPage]   = useState('home')
-  const [productSlug, setProductSlug] = useState(null)
+  const [page,        setPage]         = useState('home')
+  const [productSlug, setProductSlug]  = useState(null)
+  const [storeHighlight, setStoreHighlight] = useState(null)
   const copy = translations[locale]
 
-  const handleLanguageChange = () => setLocale(l => l === 'en' ? 'ar' : 'en')
+  const handleLanguageChange = () => setLocale(l => {
+    const next = l === 'en' ? 'ar' : 'en'
+    localStorage.setItem('sh_locale', next)
+    return next
+  })
 
   const goHome = () => { setPage('home'); window.scrollTo({ top: 0 }) }
 
-  // Called by every nav (index = nav item index 0-4, or 'product')
+  // Called by every nav (index = nav item index 0-4, or 'product' or 'stores')
   const handleNavigate = (indexOrType, slug) => {
     if (indexOrType === 'product') {
       setProductSlug(slug); setPage('product'); return
     }
+    if (indexOrType === 'stores') {
+      setStoreHighlight(slug || null); setPage('stores'); return
+    }
     switch (indexOrType) {
       case 0: setPage('home');           window.scrollTo({ top: 0 }); break
-      case 1: setPage('stores');         break
+      case 1: setStoreHighlight(null);   setPage('stores');           break
       case 2: setPage('story');          break
       case 3: setPage('craftsmanship');  break
       case 4: setPage('contact');        break
@@ -572,6 +584,7 @@ function App() {
         onLanguageChange={handleLanguageChange}
         onBack={goHome}
         onNavigate={handleNavigate}
+        highlightSlug={storeHighlight}
       />
     )
   }

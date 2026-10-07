@@ -336,3 +336,11 @@
   .pp-fade { opacity: 1 !important; transform: none !important; transition: none !important; }
   .pp-panel { animation: none !important; }
 }
+
+/* ── Availability timestamp ─────────────────────────────────────────────── */
+.pp-panel__updated {
+  font: 11px/1.4 'Newsreader', serif;
+  color: rgba(203, 189, 170, .4);
+  margin: 0 0 20px;
+}
+.pp-panel__updated time { color: rgba(203, 189, 170, .6); }

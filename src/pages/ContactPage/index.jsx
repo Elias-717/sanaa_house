@@ -162,18 +162,18 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
           <div className="cp-pitch">
             <div className="cp-pitch__block">
               <span className="cp-pitch__num">01</span>
-              <h3>Wholesale & Retail</h3>
-              <p>We supply curated heritage hospitality groups, luxury hotel gift shops, and museum stores worldwide. Minimum orders negotiated directly.</p>
+              <h3>{copy.pitchWholesaleTitle}</h3>
+              <p>{copy.pitchWholesaleBody}</p>
             </div>
             <div className="cp-pitch__block">
               <span className="cp-pitch__num">02</span>
-              <h3>Diplomatic Gifting</h3>
-              <p>Each piece carries a provenance certificate with guild information, material origin and craftsman details — designed for formal gifting programmes.</p>
+              <h3>{copy.pitchGiftingTitle}</h3>
+              <p>{copy.pitchGiftingBody}</p>
             </div>
             <div className="cp-pitch__block">
               <span className="cp-pitch__num">03</span>
-              <h3>Bespoke Commissions</h3>
-              <p>Direct guild commissions for custom vessels, textiles and attar blends. Lead time four to twelve weeks depending on craft and quantity.</p>
+              <h3>{copy.pitchBespokeTitle}</h3>
+              <p>{copy.pitchBespokeBody}</p>
             </div>
             <p className="cp-pitch__privacy">
               <span className="cp-pitch__privacy-dot" />

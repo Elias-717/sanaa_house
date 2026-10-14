@@ -34,6 +34,26 @@ function Field({ label, required, error, children }) {
   )
 }
 
+/* ── Sanitize: strip HTML tags and trim ── */
+function sanitize(str) {
+  return str.replace(/<[^>]*>/g, '').trim()
+}
+
+/* ── Rate limiting: max 5 submissions per hour via localStorage ── */
+const RATE_KEY   = 'sh_form_submissions'
+const RATE_LIMIT = 5
+const RATE_WINDOW = 60 * 60 * 1000 // 1 hour in ms
+
+function checkRateLimit() {
+  const now = Date.now()
+  const raw = localStorage.getItem(RATE_KEY)
+  const timestamps = raw ? JSON.parse(raw).filter(t => now - t < RATE_WINDOW) : []
+  if (timestamps.length >= RATE_LIMIT) return false
+  timestamps.push(now)
+  localStorage.setItem(RATE_KEY, JSON.stringify(timestamps))
+  return true
+}
+
 /* ── Validate ── */
 function validate(fields, copy) {
   const errs = {}
@@ -54,7 +74,7 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
   const isAr   = locale === 'ar'
   const [fields,  setFields]  = useState(EMPTY)
   const [errors,  setErrors]  = useState({})
-  const [status,  setStatus]  = useState('idle') // idle | submitting | success | error
+  const [status,  setStatus]  = useState('idle') // idle | submitting | success | error | rate_limited
   const formRef = useRef(null)
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
@@ -87,6 +107,13 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
       return
     }
     setErrors({})
+
+    // Rate limit: max 5 submissions per hour
+    if (!checkRateLimit()) {
+      setStatus('rate_limited')
+      return
+    }
+
     setStatus('submitting')
 
     try {
@@ -95,18 +122,17 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:    fields.name,
-          email:   fields.email,
-          phone:   fields.phone    || undefined,
-          company: fields.company  || undefined,
-          country: fields.country,
-          inquiry_type: fields.type,
-          message: fields.message,
-          _locale: copy.direction === 'rtl' ? 'ar' : 'en',
-          // Tell Formspree which field to use as reply-to
-          _replyto: fields.email,
-          // Subject line in notification email
-          _subject: `Sana'a House Inquiry — ${fields.type} from ${fields.name}`,
+          // Sanitize every field before sending
+          name:         sanitize(fields.name),
+          email:        sanitize(fields.email),
+          phone:        fields.phone    ? sanitize(fields.phone)    : undefined,
+          company:      fields.company  ? sanitize(fields.company)  : undefined,
+          country:      sanitize(fields.country),
+          inquiry_type: sanitize(fields.type),
+          message:      sanitize(fields.message),
+          _locale:      copy.direction === 'rtl' ? 'ar' : 'en',
+          _replyto:     sanitize(fields.email),
+          _subject:     `Sana'a House Inquiry — ${sanitize(fields.type)} from ${sanitize(fields.name)}`,
         }),
       })
 
@@ -297,6 +323,9 @@ export default function ContactPage({ locale, onLanguageChange, onBack, onNaviga
 
                 {status === 'error' && (
                   <p className="cp-form__error" role="alert">{copy.formError}</p>
+                )}
+                {status === 'rate_limited' && (
+                  <p className="cp-form__error" role="alert">{copy.rateError}</p>
                 )}
 
                 <div className="cp-form__footer">

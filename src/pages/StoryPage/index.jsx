@@ -23,16 +23,22 @@ function useFadeIn(threshold = 0.15) {
 }
 
 /* ── Nav ── */
-function StoryNav({ onLanguageChange, onBack, copy }) {
+function StoryNav({ onLanguageChange, onBack, onNavigate, copy }) {
   return (
     <nav className="sp-nav">
-      <a className="sp-nav__brand" href="#top" onClick={onBack}>
+      <button className="sp-nav__brand" onClick={onBack}>
         <img src={logo} alt="Sana'a House" />
         <span>Sana'a House<small>دار صنعاء · ١٩٨٧</small></span>
-      </a>
+      </button>
       <div className="sp-nav__links">
         {copy.navigation.map((item, i) => (
-          <a key={item} href="#top" onClick={onBack}>{item}</a>
+          <button
+            key={item}
+            className="sp-nav__link-btn"
+            onClick={() => i === 2 ? null : onNavigate(i)}
+          >
+            {item}
+          </button>
         ))}
       </div>
       <button className="sp-nav__lang" onClick={onLanguageChange}>{copy.language}</button>
@@ -217,13 +223,13 @@ function StoryClosing({ copy, onBack }) {
 }
 
 /* ── Root ── */
-export default function StoryPage({ locale, onLanguageChange, onBack }) {
+export default function StoryPage({ locale, onLanguageChange, onBack, onNavigate }) {
   const copy = translations[locale]
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
 
   return (
     <div className="sp-site" dir={copy.direction}>
-      <StoryNav copy={copy} locale={locale} onLanguageChange={onLanguageChange} onBack={onBack} />
+      <StoryNav copy={copy} locale={locale} onLanguageChange={onLanguageChange} onBack={onBack} onNavigate={onNavigate} />
       <main>
         <StoryHero copy={copy} />
         <Chronicle />

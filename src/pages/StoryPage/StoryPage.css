@@ -516,3 +516,15 @@
   .sp-eyebrow__dot { animation: none !important; }
   .sp-entry__img-wrap img { transform: scale(1) !important; transition: none !important; }
 }
+
+/* nav link buttons (same feel as anchor links) */
+.sp-nav__link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: 12px 'Newsreader', serif;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s;
+}
+.sp-nav__link-btn:hover { color: var(--brass); }

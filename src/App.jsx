@@ -126,7 +126,6 @@ function Hero({ copy }) {
       [0,    0   ],
       [0,    0.40],
       [0.40, 0.80],
-      [0.80, 1.00],
     ]
 
     // Cache heroTop once — it never changes after mount
@@ -135,7 +134,7 @@ function Hero({ copy }) {
 
     const update = () => {
       if (heroTop === null) {
-        heroTop = hero.getBoundingClientRect().top + window.scrollY
+        heroTop = hero.getBoundingClientRect().top + window.scrollY - 80
       }
       const scrolled = window.scrollY - heroTop
       const range = hero.offsetHeight - window.innerHeight
@@ -165,11 +164,16 @@ function Hero({ copy }) {
       update()
     }
 
-    startListening()
+    if (city) {
+      city.addEventListener('animationend', startListening, { once: true })
+    } else {
+      startListening()
+    }
 
     return () => {
       window.removeEventListener('scroll', onScroll)
       if (frame) cancelAnimationFrame(frame)
+      if (city) city.removeEventListener('animationend', startListening)
     }
   }, [])
 
@@ -189,7 +193,6 @@ function Hero({ copy }) {
       </div>
       <div className="sanaa-hero__layer sanaa-hero__city" data-parallax-layer="2" />
       <div className="sanaa-hero__layer sanaa-hero__bab" data-parallax-layer="3" />
-      <div className="sanaa-hero__layer sanaa-hero__foreground" data-parallax-layer="4" />
       <div className="sanaa-hero__veil" />
       <div className="sanaa-hero__content">
         <p className="sanaa-hero__eyebrow hero-land-1">SANAA, YEMEN</p>

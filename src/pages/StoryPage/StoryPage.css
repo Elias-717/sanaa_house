@@ -75,10 +75,15 @@
   font: 500 18px 'Newsreader', serif;
   color: var(--ink);
   text-decoration: none;
+  /* reset default <button> chrome (was showing a white box + border) */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .sp-nav__brand img { width: 34px; height: 34px; object-fit: contain; display: block; }
 .sp-nav__brand small { display: block; color: var(--brass); font: 10px 'Noto Serif',serif; margin-top: 3px; }
-.sp-nav__links { display: flex; gap: clamp(18px,2.4vw,40px); font-size: 12px; }
+.sp-nav__links { display: flex; align-items: center; gap: clamp(16px,2vw,36px); font-size: 12px; }
 .sp-nav__links a { color: var(--muted); text-decoration: none; transition: color .2s; }
 .sp-nav__links a:hover { color: var(--brass); }
 .sp-nav__lang { background: #221b15; border: 1px solid var(--line); color: var(--muted); font-size: 11px; padding: 7px 13px; cursor: pointer; transition: color .2s; font-family: inherit; }
@@ -516,3 +521,19 @@
   .sp-eyebrow__dot { animation: none !important; }
   .sp-entry__img-wrap img { transform: scale(1) !important; transition: none !important; }
 }
+
+/* nav link buttons — match the other sub-pages (plain, color-only hover) */
+.sp-nav__link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: 12px 'Newsreader', serif;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s;
+  white-space: nowrap;
+}
+.sp-nav__link-btn:hover { color: var(--brass); }
+
+/* keep the logo transparent regardless of asset */
+.sp-nav__brand img { background: transparent; }

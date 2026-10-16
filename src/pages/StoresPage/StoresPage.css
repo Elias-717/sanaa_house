@@ -255,3 +255,47 @@
   .stp-fade { opacity: 1 !important; transform: none !important; transition: none !important; }
   .stp-map { opacity: 1 !important; transition: none !important; }
 }
+
+/* ── Product highlight banner ───────────────────────────────────────────── */
+.stp-highlight-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 32px;
+  background: rgba(196, 154, 69, 0.08);
+  border-bottom: 1px solid rgba(196, 154, 69, 0.25);
+}
+.stp-highlight-banner img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  opacity: .8;
+}
+.stp-highlight-banner div { flex: 1; }
+.stp-highlight-banner__clear {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color .2s, border-color .2s;
+  flex-shrink: 0;
+}
+.stp-highlight-banner__clear:hover { color: var(--brass); border-color: var(--brass); }
+
+/* Carrying badge on store card */
+.stp-carrying-badge {
+  font: 500 10px/1 'Public Sans', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #7dba7d;
+  background: rgba(125, 186, 125, .1);
+  border: 1px solid rgba(125, 186, 125, .3);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.stp-card--carrying {
+  border-inline-start: 3px solid rgba(125, 186, 125, .5);
+}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { products, translations } from '@/data'
-import logo from '@/assets/sanaa_logo.png'
 import { InteractiveHoverButton } from '@/components/ui/InteractiveHoverButton'
 import { useTypewriter, useStoryWriter } from '@/hooks/useTypewriter'
 import StoryPage         from '@/pages/StoryPage'
@@ -9,6 +8,9 @@ import StoresPage        from '@/pages/StoresPage'
 import ContactPage       from '@/pages/ContactPage'
 import CraftsmanshipPage from '@/pages/CraftsmanshipPage'
 import './App.css'
+
+// Transparent-background SVG logo (the PNG has a baked-in white box)
+const logo = '/sanaa_logo.svg'
 
 function Anchor({ href, children, className = '', ...rest }) {
   return <a className={className} href={href} {...rest}>{children}</a>
@@ -391,9 +393,11 @@ function ProductCard({ product, index, locale, onProductClick }) {
         <img src={product.image} alt={isAr ? product.nameAr : product.name} loading="lazy" />
         <span>0{index + 1}</span>
       </div>
-      <p className="eyebrow">{isAr ? product.categoryAr : product.category}</p>
-      <h3>{isAr ? product.nameAr : product.name}</h3>
-      <p>{isAr ? product.descriptionAr : product.description}</p>
+      <div className="product-body">
+        <p className="eyebrow">{isAr ? product.categoryAr : product.category}</p>
+        <h3>{isAr ? product.nameAr : product.name}</h3>
+        <p>{isAr ? product.descriptionAr : product.description}</p>
+      </div>
     </article>
   )
 }
@@ -552,7 +556,7 @@ function App() {
 
   /* ── Sub-pages ── */
   if (page === 'story') {
-    return <StoryPage locale={locale} onLanguageChange={handleLanguageChange} onBack={goHome} />
+    return <StoryPage locale={locale} onLanguageChange={handleLanguageChange} onBack={goHome} onNavigate={handleNavigate} />
   }
   if (page === 'product') {
     return (

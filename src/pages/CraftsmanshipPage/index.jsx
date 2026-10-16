@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { crafts, translations } from '@/data'
-import logo from '@/assets/sanaa_logo.png'
 import './CraftsmanshipPage.css'
+
+// Transparent-background SVG logo (the PNG has a baked-in white box)
+const logo = '/sanaa_logo.svg'
 
 function CraftNav({ copy, onBack, onLanguageChange, onNavigate }) {
   return (
@@ -120,7 +122,7 @@ function CraftEntry({ craft, index, locale }) {
 }
 
 /* ── Closing quote ── */
-function ClosingQuote({ ref: _r }) {
+function ClosingQuote({ copy }) {
   const ref = useFadeRef()
   return (
     <section className="crp-closing crp-fade" ref={ref}>
@@ -128,9 +130,9 @@ function ClosingQuote({ ref: _r }) {
         <span /><span /><span />
       </div>
       <blockquote>
-        "The hand does not forget what the machine never learned."
+        {copy.craftingQuote}
       </blockquote>
-      <cite>— Zayd Al-Sanaani, founder, 1987</cite>
+      <cite>{copy.craftingQuoteAuthor}</cite>
     </section>
   )
 }
@@ -209,7 +211,7 @@ export default function CraftsmanshipPage({ locale, onLanguageChange, onBack, on
             {crafts.map((craft, i) => (
               <CraftEntry key={craft.slug} craft={craft} index={i} locale={locale} />
             ))}
-            <ClosingQuote />
+            <ClosingQuote copy={copy} />
           </div>
         </div>
       </main>

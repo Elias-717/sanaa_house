@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { chronicle, translations } from '@/data'
-import logo from '@/assets/sanaa_logo.png'
 import './StoryPage.css'
+
+// Transparent-background SVG logo (the PNG has a baked-in white box)
+const logo = '/sanaa_logo.svg'
 
 /* ── Shared fade-in observer hook ── */
 function useFadeIn(threshold = 0.15) {
@@ -23,16 +25,22 @@ function useFadeIn(threshold = 0.15) {
 }
 
 /* ── Nav ── */
-function StoryNav({ onLanguageChange, onBack, copy }) {
+function StoryNav({ onLanguageChange, onBack, onNavigate, copy }) {
   return (
     <nav className="sp-nav">
-      <a className="sp-nav__brand" href="#top" onClick={onBack}>
+      <button className="sp-nav__brand" onClick={onBack}>
         <img src={logo} alt="Sana'a House" />
         <span>Sana'a House<small>دار صنعاء · ١٩٨٧</small></span>
-      </a>
+      </button>
       <div className="sp-nav__links">
         {copy.navigation.map((item, i) => (
-          <a key={item} href="#top" onClick={onBack}>{item}</a>
+          <button
+            key={item}
+            className="sp-nav__link-btn"
+            onClick={() => i === 2 ? null : onNavigate(i)}
+          >
+            {item}
+          </button>
         ))}
       </div>
       <button className="sp-nav__lang" onClick={onLanguageChange}>{copy.language}</button>
@@ -195,7 +203,7 @@ function Chronicle() {
 }
 
 /* ── Closing CTA ── */
-function StoryClosing({ copy, onBack }) {
+function StoryClosing({ copy, onBack, onNavigate }) {
   const ref = useFadeIn()
   return (
     <section className="sp-closing sp-fade" ref={ref}>
@@ -207,8 +215,8 @@ function StoryClosing({ copy, onBack }) {
         <h2>The Maker's Hand,<br />Unbroken.</h2>
         <p>Every piece in our catalogue carries an unbroken chain of craft — from highland guild workshop to your hands.</p>
         <div className="sp-closing__actions">
-          <a className="sp-btn sp-btn--primary" href="#top" onClick={onBack}>{copy.explore}</a>
-          <a className="sp-btn sp-btn--ghost" href="#footer" onClick={onBack}>{copy.inquiry}</a>
+          <button className="sp-btn sp-btn--primary" onClick={onBack}>{copy.explore}</button>
+          <button className="sp-btn sp-btn--ghost" onClick={() => onNavigate(4)}>{copy.inquiry}</button>
         </div>
       </div>
       <div className="sp-closing__img" />
@@ -217,17 +225,17 @@ function StoryClosing({ copy, onBack }) {
 }
 
 /* ── Root ── */
-export default function StoryPage({ locale, onLanguageChange, onBack }) {
+export default function StoryPage({ locale, onLanguageChange, onBack, onNavigate }) {
   const copy = translations[locale]
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }) }, [])
 
   return (
     <div className="sp-site" dir={copy.direction}>
-      <StoryNav copy={copy} locale={locale} onLanguageChange={onLanguageChange} onBack={onBack} />
+      <StoryNav copy={copy} locale={locale} onLanguageChange={onLanguageChange} onBack={onBack} onNavigate={onNavigate} />
       <main>
         <StoryHero copy={copy} />
         <Chronicle />
-        <StoryClosing copy={copy} onBack={onBack} />
+        <StoryClosing copy={copy} onBack={onBack} onNavigate={onNavigate} />
       </main>
       <footer className="sp-footer">
         <span>© 1987–2026 Sana'a House Artisans Co.</span>

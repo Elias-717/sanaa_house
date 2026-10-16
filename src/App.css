@@ -691,7 +691,7 @@
 /* Product grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 44px 22px;
 }
 .product {
@@ -699,30 +699,14 @@
   border: 1px solid var(--line);
   padding: 16px;
 }
-.product-1             { grid-column: span 7; }
-.product-2             { grid-column: span 5; }
-.product-3,
-.product-4,
-.product-5             { grid-column: span 4; }
-.product-6 {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 35px;
-  align-items: center;
-}
+/* All six cards share one uniform column width (no asymmetric spans) */
 .product-pic {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--bg);
   position: relative;
   margin-bottom: 18px;
 }
-.product-2 .product-pic,
-.product-3 .product-pic,
-.product-4 .product-pic,
-.product-5 .product-pic { aspect-ratio: 4 / 5; }
-.product-6 .product-pic { margin: 0; }
 .product-pic img {
   width: 100%;
   height: 100%;
@@ -740,7 +724,7 @@
 }
 .product h3,
 .favorite h3 { font: 500 24px / 1.1 'Newsreader', serif; margin: 0 0 9px; }
-.product > p:last-child { color: var(--muted); font: 15px / 1.45 'Newsreader', serif; margin: 0; }
+.product-body > p:last-child { color: var(--muted); font: 15px / 1.45 'Newsreader', serif; margin: 0; }
 
 /* ── Qamariya quote ─────────────────────────────────────────────────────── */
 .qamariya {
@@ -894,14 +878,6 @@
   .hero h1                  { font-size: 64px; }
   .vessel-label             { display: none; }
   .product-grid             { grid-template-columns: 1fr 1fr; }
-  .product-1,
-  .product-2,
-  .product-3,
-  .product-4,
-  .product-5,
-  .product-6                { grid-column: auto; }
-  .product-6                { display: block; }
-  .product-6 .product-pic   { margin-bottom: 18px; }
   .favorite-grid,
   .footer-main              { grid-template-columns: 1fr; }
   .section-head             { align-items: start; flex-direction: column; }
@@ -918,10 +894,6 @@
   .collection,
   .favorites                { padding-block: 70px; }
   .product-grid             { grid-template-columns: 1fr; }
-  .product-2,
-  .product-3,
-  .product-4,
-  .product-5                { margin-top: 15px; }
   .qamariya                 { padding-top: 60px; }
   .footer                   { padding-top: 60px; }
   .story-polaroids          { height: 300px; }

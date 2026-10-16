@@ -47,12 +47,12 @@ export const crafts = [
   },
   {
     slug: 'perfume',
-    title: 'The Fermenting of Makhmariya', titleAr: 'تخمير المخمرية',
+    title: 'The Six-Month Seal', titleAr: 'الختم لستة أشهر',
     subtitle: "Perfume · Old Sana'a", subtitleAr: 'العطر · صنعاء القديمة',
     intro: "The attar quarter of Old Sana'a occupies a single alley in the northeast corner of the souq. Twelve workshops. Four families. One tradition that predates the Ottoman towers visible above their rooftops.",
     introAr: 'يشغل حي العطّارين في صنعاء القديمة زقاقاً واحداً في الزاوية الشمالية الشرقية من السوق. اثنا عشر ورشة. أربع عائلات.',
-    body: "Makhmariya takes its name from takhmir — fermentation. Our master grinds agarwood oud with amber, white mahlab, cardamom and clove, works the blend into a base oil, then seals it in a copper vessel for months. Nothing is added after sealing. The spices marry, the oud deepens, and what emerges is the warm, resinous bridal attar Yemeni women have worn for generations. It is not what was poured in — it is what time made of it.",
-    bodyAr: 'تأخذ المخمرية اسمها من التخمير. يطحن أستاذنا العود مع العنبر والمحلب الأبيض والهيل والقرنفل، ويعجنها في زيت أساس، ثم يختمها في وعاء نحاسي أشهراً. لا يُضاف شيء بعد الختم. تتزاوج التوابل ويعمق العود، فيخرج عطر العرائس الدافئ الراتنجي الذي ترتديه نساء اليمن منذ أجيال. ليس ما سُكب — بل ما صنعه الوقت.',
+    body: "Our master blends wild Haraz rose with Hadhramaut jasmine, fixes them against a base of aged Socotra oud — a wood whose resin content increases the longer it is stored — then seals the blend in a hammered copper vessel for a minimum of six months. Nothing is added after sealing. The blend breathes, marries and changes. What emerges after six months is not what was poured in. It is what time made of it.",
+    bodyAr: 'يمزج أستاذنا وردة حراز البرية مع ياسمين حضرموت، يثبتهما على قاعدة من عود سقطرى معتَّق، ثم يختم المزيج في وعاء نحاسي لمدة ستة أشهر. ما يخرج بعد ستة أشهر ليس ما سُكب. إنه ما صنعه الوقت.',
     image: perfume,
   },
 ]

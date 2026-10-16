@@ -1,0 +1,23 @@
+# Netlify deployment configuration for Sana'a House
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback — the app routes client-side, so every path serves index.html.
+# (The in-app router then renders the right page or the 404 view.)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers (mirrors the former vercel.json)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org; frame-src https://www.openstreetmap.org; connect-src 'self' https://formspree.io; form-action https://formspree.io; base-uri 'self'; object-src 'none'"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"

@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState, useMemo, lazy, Suspense } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { products, translations } from '@/data'
 import logo from '@/assets/sanaa_logo.png'
 import { InteractiveHoverButton } from '@/components/ui/InteractiveHoverButton'
 import { useTypewriter, useStoryWriter } from '@/hooks/useTypewriter'
-
-// Lazy-load all page components — each becomes a separate JS chunk
-const StoryPage         = lazy(() => import('@/pages/StoryPage'))
-const ProductPage       = lazy(() => import('@/pages/ProductPage'))
-const StoresPage        = lazy(() => import('@/pages/StoresPage'))
-const ContactPage       = lazy(() => import('@/pages/ContactPage'))
-const CraftsmanshipPage = lazy(() => import('@/pages/CraftsmanshipPage'))
+import StoryPage         from '@/pages/StoryPage'
+import ProductPage       from '@/pages/ProductPage'
+import StoresPage        from '@/pages/StoresPage'
+import ContactPage       from '@/pages/ContactPage'
+import CraftsmanshipPage from '@/pages/CraftsmanshipPage'
 import './App.css'
 
 function Anchor({ href, children, className = '', ...rest }) {
@@ -564,86 +562,50 @@ function App() {
 
   const openProduct = (slug) => { setProductSlug(slug); setPage('product') }
 
-  /* ── Sub-pages (lazy-loaded, wrapped in Suspense) ── */
-  const pageFallback = (
-    <div style={{ minHeight: '100vh', background: '#16110d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ color: '#c49a45', fontFamily: 'Newsreader, serif', fontSize: '1.1rem', letterSpacing: '.1em' }}>
-        ·  ·  ·
-      </span>
-    </div>
-  )
-
+  /* ── Sub-pages ── */
   if (page === 'story') {
-    return (
-      <Suspense fallback={pageFallback}>
-        <StoryPage locale={locale} onLanguageChange={handleLanguageChange} onBack={goHome} onNavigate={handleNavigate} />
-      </Suspense>
-    )
+    return <StoryPage locale={locale} onLanguageChange={handleLanguageChange} onBack={goHome} />
   }
   if (page === 'product') {
     return (
-      <Suspense fallback={pageFallback}>
-        <ProductPage
-          slug={productSlug}
-          locale={locale}
-          onLanguageChange={handleLanguageChange}
-          onBack={() => setPage('home')}
-          onNavigate={handleNavigate}
-        />
-      </Suspense>
+      <ProductPage
+        slug={productSlug}
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={() => setPage('home')}
+        onNavigate={handleNavigate}
+      />
     )
   }
   if (page === 'stores') {
     return (
-      <Suspense fallback={pageFallback}>
-        <StoresPage
-          locale={locale}
-          onLanguageChange={handleLanguageChange}
-          onBack={goHome}
-          onNavigate={handleNavigate}
-          highlightSlug={storeHighlight}
-        />
-      </Suspense>
+      <StoresPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
+        highlightSlug={storeHighlight}
+      />
     )
   }
   if (page === 'contact') {
     return (
-      <Suspense fallback={pageFallback}>
-        <ContactPage
-          locale={locale}
-          onLanguageChange={handleLanguageChange}
-          onBack={goHome}
-          onNavigate={handleNavigate}
-        />
-      </Suspense>
+      <ContactPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
+      />
     )
   }
   if (page === 'craftsmanship') {
     return (
-      <Suspense fallback={pageFallback}>
-        <CraftsmanshipPage
-          locale={locale}
-          onLanguageChange={handleLanguageChange}
-          onBack={goHome}
-          onNavigate={handleNavigate}
-        />
-      </Suspense>
-    )
-  }
-
-  /* ── 404 fallback — unknown page state ── */
-  if (page !== 'home') {
-    return (
-      <div className="not-found" dir={copy.direction}>
-        <div className="not-found__inner">
-          <p className="not-found__eyebrow">404</p>
-          <h1>{locale === 'ar' ? 'الصفحة غير موجودة' : 'Page Not Found'}</h1>
-          <p>{locale === 'ar' ? 'تعذّر العثور على ما تبحث عنه.' : "We couldn't find what you were looking for."}</p>
-          <button className="not-found__btn" onClick={goHome}>
-            {locale === 'ar' ? '← العودة إلى الرئيسية' : '← Back to Home'}
-          </button>
-        </div>
-      </div>
+      <CraftsmanshipPage
+        locale={locale}
+        onLanguageChange={handleLanguageChange}
+        onBack={goHome}
+        onNavigate={handleNavigate}
+      />
     )
   }
 

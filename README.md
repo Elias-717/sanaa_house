@@ -209,7 +209,7 @@ Configuration is already in `netlify.toml` (build command, publish dir, SPA redi
 
 ## 🔒 Security & privacy
 
-- Security headers (CSP, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS) are set in `netlify.toml`
+- Security headers (CSP with `frame-ancestors` allowing only the owner's portfolio to embed the site, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS) are set in `netlify.toml`
 - The Content-Security-Policy whitelists only what the app uses: Google Fonts, OpenStreetMap embeds, and the Formspree endpoint
 - No analytics, no trackers, no third-party cookies
 - The only personal data collected is what a visitor types into the contact form
